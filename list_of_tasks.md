@@ -32,6 +32,12 @@ $$
 ## Définition du Flux
 
 $$
-u^{*} = u^n + \Delta t \partial _xF(u^n) \\
-
+\begin{aligned}
+u^{*} &= W(x) u^n(x) + \Delta t \partial _xF(u^n(x)) \\
+\int_{\Omega_k} u^* \phi _i(x) &= \int_{\Omega_k} W(x) u^n\phi _i(x) + \Delta t \int_{\Omega_k}\partial _xF(u^n(x))\phi _i(x) \\
+\sum_j \alpha_{k,j}\int_{\Omega_k} \phi _i \phi _j &= \int_{\Omega_k} W(x)u^n(x)\phi _i(x) - \Delta t \int_{\Omega_k}\partial _xF(u^n(x))\phi _i(x) + [F(u^n)\phi_i]^{x_{j+1/2}}_{x_{j-1/2}} \\
+M\alpha_k &= \sum^{N_q}_{q=1} W(x_q)u_n(x_q)\phi(x_q) - \Delta T \sum^{N_q}_{q=1}F(u_n(x_q))\partial \phi(x_q)+ [F(u)\phi]^{x_{j+1/2}}_{x_{j-1/2}}
+\end{aligned}
 $$
+
+Avec la matrice de masse $ \{M_{ij}\}_{i,j = 1,...,N}=\sum_{q=1}^{N_q}\phi_i(x_q)\phi_j(x_q)$
