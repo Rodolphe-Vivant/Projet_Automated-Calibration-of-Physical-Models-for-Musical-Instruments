@@ -15,11 +15,10 @@ $$
 
 où $u=(p,v)^T$
 
-On introduit ensuite une fonction test vectorielle $\phi=(\tilde p, \tilde v)^T$ 
-\(\phi = (\tilde{p}, \tilde{v})\) pour construire la formulation faible :
+On introduit ensuite une fonction test vectorielle $\phi=(\tilde p, \tilde v)^T$ pour construire la formulation faible :
 
 $$
-\int_{I_i} W(x)\, \partial_t u \cdot \phi \, dx - \int_{I_i} F(u) \cdot \partial_x \phi\, dx + 
+\int_{I_i} W(x)\, u \cdot \partial_t\phi \, dx - \int_{I_i} F(u) \cdot \partial_x \phi\, dx + 
 [F(u) \cdot \phi]_{x_{i-\frac{1}{2}}}^{x_{i+\frac{1}{2}}} = 0.
 $$
 
@@ -41,3 +40,61 @@ M\alpha_k &= \sum^{N_q}_{q=1} W(x_q)u_n(x_q)\phi(x_q) - \Delta T \sum^{N_q}_{q=1
 $$
 
 Avec la matrice de masse $ \{M_{ij}\}_{i,j = 1,...,N}=\sum_{q=1}^{N_q}\phi_i(x_q)\phi_j(x_q)$
+
+## Main Objective
+
+A partir d'une eq, evolution de la pression au  travers de l'instrument à hanche, 
+Param non identifiable, fonction non lin l(y) choisit empiriquement,
+Probleme inverse, connaissant des solutions (partielles, ponctuellement, ) données -> retrouver les coefficients ou l(y) à partir des mesures. (probleme inverse -> estimation de la fonction)
+
+Comment transformer les données 
+
+- Synthétiser les données
+- différentiation automatique pas besoin de calculer le problème adjoint. (même principe que le calcul de l'adjoint)
+Param (S=1)
+
+Diagonaliser l'équation des ondes 
+p-u et p+u
+
+d_tu+cd_xu=0
+d_tp+cdx_u=0
+
+source = 0 
+
+u+p et u-p
+
+$$
+d_tu + cAd_xu=0
+$$
+with $u=(p,v)^T$ and :
+
+$$
+A = 
+\begin{pmatrix}
+0 & 1\\[4pt]
+1 & 0
+\end{pmatrix}
+$$
+
+we obtain the following system of equation : 
+$$
+\begin{aligned}
+p_t+cv_x=0 \\
+v_t+cp_x=0
+\end{aligned}
+$$
+
+That can be re-written :
+$$
+\begin{aligned}
+(p+v)_t+c(p+v)_x=0 \\
+(p-v)_t-c(p-v)_x=0
+\end{aligned}
+$$
+
+write the solution of these equations and isolate the solution for p and v
+
+
+## Ref
+
+Gary Cohen Sebasiten Pernet, 
