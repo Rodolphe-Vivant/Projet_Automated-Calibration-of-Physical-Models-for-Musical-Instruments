@@ -1,4 +1,5 @@
 venv/
+
 *.aux
 *.log
 *.out
@@ -9,3 +10,8 @@ venv/
 *.pdf
 *.bbl
 *.blg
+*.nav
+*.snm
+*.toc
+*.synctex.gz
+presentation.bbl-SAVE-ERROR
