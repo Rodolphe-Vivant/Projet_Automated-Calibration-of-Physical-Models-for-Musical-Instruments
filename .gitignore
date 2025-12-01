@@ -1,1 +1,17 @@
 venv/
+
+*.aux
+*.log
+*.out
+*.bcf
+*.fdb_latexmk
+*.fls
+*.run.xml
+*.pdf
+*.bbl
+*.blg
+*.nav
+*.snm
+*.toc
+*.synctex.gz
+presentation.bbl-SAVE-ERROR

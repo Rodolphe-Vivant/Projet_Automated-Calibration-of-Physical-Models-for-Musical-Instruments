@@ -1,0 +1,246 @@
+% presentation.tex
+% Beamer template (français) pour une présentation de projet (structure en 4 parties)
+\documentclass[11pt]{beamer}
+
+% Langue et encodage
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{amsmath,empheq}
+\usepackage{hyperref}
+\usepackage[backend=biber, style=numeric]{biblatex}
+\addbibresource{biblio.bib}
+\hypersetup{pdfauthor={R. Vivant}, pdftitle={Automated Calibration of Physical Models}}
+
+% Thème et couleurs
+\usetheme{Madrid}            % thème clair et professionnel
+\usecolortheme{seagull}
+\setbeamertemplate{navigation symbols}{} % supprime icônes de navigation
+% Avoid requesting small caps in sans fonts (Latin Modern Sans doesn't provide sc);
+% force upright (no small caps) for title/frametitle/author to prevent font shape warnings.
+\setbeamerfont{frametitle}{series=\bfseries,shape=\upshape}
+\setbeamerfont{title}{series=\bfseries,shape=\upshape}
+\setbeamerfont{author}{series=\mdseries,shape=\upshape}
+
+% Couleurs personnalisées
+\definecolor{accent}{RGB}{0,102,153}
+\setbeamercolor{frametitle}{bg=accent, fg=white}
+\setbeamercolor{title}{bg=white, fg=accent}
+\setbeamercolor{structure}{fg=accent}
+
+% Infos du titre
+\title[Automated Calibration]{Automated Calibration of Physical Models for Musical Instruments}
+\author[R. M. Vivant]{Rodolphe Milton Vivant}
+\institute[Ufr Mathématiques et Informatique de Strasbourg]{Master 2 — Projet}
+\date{\today}
+
+% En-tête / pied de page
+\setbeamertemplate{footline}{
+    \leavevmode%
+    \hbox{%
+    \begin{beamercolorbox}[wd=.65\paperwidth,ht=2.5ex,dp=1ex,left]{author in head/foot}%
+        \hspace{1em}\insertshortauthor{} — \insertshortinstitute
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+        \insertshortdate{}\hspace{1em}
+    \end{beamercolorbox}}%
+    \vskip0pt%
+}
+\setbeamertemplate{headline}{}
+
+% Commandes utiles
+\newcommand{\slideTitle}[1]{\begin{frame}\frametitle{#1}}
+
+% Document
+\begin{document}
+
+% Page de titre
+\begin{frame}[plain]
+    \titlepage
+    % Trois logos sous la page de titre — adaptez les chemins/noms de fichiers
+    \vfill
+    \begin{center}
+        \includegraphics[height=2.5cm]{Images/inria_logo.png}\hspace{0.0em}%
+        \includegraphics[height=2.5cm]{Images/modartt_logo.png}\hspace{0.0em}%
+        \includegraphics[height=1.6cm]{Images/logo_irma.png}
+    \end{center}
+    \vspace{0.8em}
+    % Si vous avez un logo : \includegraphics[height=1.5cm]{logo.png}
+\end{frame}
+
+% Plan
+\begin{frame}
+    \frametitle{Plan}
+    \tableofcontents
+\end{frame}
+
+% Section 1
+\section{Objectives and Context}
+\slideTitle{Context}
+\begin{itemize}
+    \item Automatically adjust parameters of physical models to match target sounds of reed instruments.
+    \item Joint collaboration between IRMA and Modartt.
+    \item Modartt \cite{Modartt} is a French company specialized in the development of artistic and technological application software.
+\end{itemize}
+\end{frame}
+
+\slideTitle{Objectives}
+In JAX framework:
+\begin{itemize}
+    \item Implement a Discrete Galerkin Method to numerically solve the mixt form of the wave.
+    \item Couple it with an ODE and the boundary conditions of a reed instrument.
+    \item Compute the gradient with respect to all parameters.
+\end{itemize}
+\end{frame}
+
+\section{Theoritical Aspects}
+\slideTitle{Reed Instruments}
+\begin{itemize}
+    \item \cite{Universalis_Anche} Reed : thin, flexible lamina mounted at the mouthpiece or at the entrance of an air column resonator.
+    \item \cite{chaigne:hal-05370840} When subjected to a pressure difference $\rightarrow$ generates self-sustained oscillations (sound).
+\end{itemize}
+            
+\begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+        \begin{itemize}
+            \item Two principal categories of reed instruments:
+                \begin{itemize}
+                    \item Free reeds (harmonicas, accordions, ...).
+                    \item Beating reeds (clarinets, saxophones, ...).
+                \end{itemize}
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \centering
+        \vspace{-1ex}
+        \includegraphics[width=\linewidth,keepaspectratio]{Images/reed_column.png} 
+        \par\smallskip
+        \scriptsize Example of a saxophone reed and mouthpiece.
+        \label{fig:sax_reed}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\slideTitle{Physical Model \cite{MAMAMIA2024}}
+\noindent\begin{minipage}[t]{\linewidth}
+\scriptsize
+\begin{subequations}
+\begin{empheq}[left=\empheqlbrace]{align}
+    \frac{S(x)}{c S^\ast}\,\partial_t p(x,t) + \partial_x v(x,t) &= 0 \label{eq:1a}\\[4pt]
+    \frac{S^\ast}{c S(x)}\,\partial_t v(x,t) + \partial_x p(x,t) &= 0 \label{eq:1b}\\[4pt]
+    \frac{Z^\ast}{T}\,\partial_t \phi + \sqrt{\alpha}\,p(L,t) &= 0 \label{eq:1c}\\[4pt]
+    -\frac{\beta}{Z^\ast T}\,p(L,t) + v(L,t) + \sqrt{\alpha}\,\phi &= 0 \label{eq:1d}\\[4pt]
+    -v(0,t) + \zeta_\ell(y)\,F(\gamma - p(0,t)) + \varepsilon\frac{\kappa}{\omega_r}\,\partial_t y &= 0 \label{eq:1e}\\[6pt]
+    \frac{1}{\omega_r^2}\,\partial_{tt} y + \frac{1}{Q_r\omega_r}\,\partial_t y + y - 1 
+    &= \varepsilon(\gamma - p(0,t)) \label{eq:1f}
+\end{empheq}
+\end{subequations}
+\end{minipage}
+{\scriptsize
+\begin{itemize}
+    \item Equations \eqref{eq:1a} and \eqref{eq:1b}: wave propagation in a variable section tube.
+    \item Equations \eqref{eq:1c} and \eqref{eq:1d}: Radiative phenomenons ($\phi$).
+    \item Equations \eqref{eq:1e} and \eqref{eq:1f}: effects of the instrumental player at the input boundary.
+\end{itemize}
+}
+\end{frame}
+
+% Section 2
+\section{Methods}
+\slideTitle{Discrete Galerkin Method \cite{HesthavenWarburton2008}}
+\begin{itemize}
+    \item Numerical method to solve PDEs.
+    \item Consider a transport equation :
+\begin{equation}\label{eq:transport}
+    \partial_t u(x,t) + \partial_x F(u(x,t)) = 0
+\end{equation}
+    \begin{itemize}
+        \item where $u \in \Omega \times [0,T] \rightarrow \mathbb{R}$,
+        \item $F : \mathbb{R} \rightarrow \mathbb{R}$ is the flux function
+    \end{itemize}
+    \item Let's consider an Euler explicit time discretization with time step $\Delta t$.
+    \item At each time step $t^n = n\Delta t$, we want to approximate $u(x,t^n)$ by $u^n(x)$.
+    \item this gives :
+\begin{equation}
+    u^{n+1}(x) = u^n(x)  - \Delta t \, \partial_x F(u^n(x))
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\slideTitle{Discrete Galerkin Method (contd.)}
+Now we consider that the state $u^n$ is known: 
+\begin{itemize}
+    \item Domain $\Omega$ is discretized into $K$ non-overlapping elements $\Omega_k$.
+    \item Test function $\phi_i$ is defined on each element $\Omega_k$ $\rightarrow$ Weak formulation :
+\begin{equation}
+    \int_{\Omega_k} u^{n+1}(x)\phi_i = \int_{\Omega_k} u^n(x) \phi_i - \Delta t \, \int_{\Omega_k}  \partial_x F(u^n(x)) \phi_i(x)\,dx
+\end{equation}
+    \item After Integration by parts, and expressing $u^{n+1}(x)=\sum_j \alpha_{k,j}\phi_j$ we get :
+    \scriptsize
+    \begin{equation}
+        \sum_j \alpha_{k,j} \int_{\Omega_k} \phi_j \phi_i = \int_{\Omega_k} u^n(x) \phi_i + \Delta t \, \int_{\Omega_k} F(u^n(x)) \partial_x \phi_i(x)\,dx - \Delta t \, \left[ F(u^n(x)) \phi_i(x) \right]_{\partial \Omega_k}
+    \end{equation}
+    \normalsize
+    \item $M_{ij}$ = $\int_{\Omega_k} \phi_j \phi_i$ is a component of the mass matrix.
+    \item we finally obtain a linear system to solve for the coefficients $\alpha_{k,j}$.
+\begin{equation}
+    M \boldsymbol{\alpha_k} = \mathbf{b_k}
+\end{equation}
+    \item where $\mathbf{b_k}$ contains all known terms at time step $t^n$.
+\end{itemize}
+\end{frame}
+
+\slideTitle{Simplified Model}
+To validate the implementation of the DGM, we consider a simplified model :
+\begin{itemize}
+    \item System of equations :
+    \begin{equation}
+        \begin{cases}
+            \partial_t p(x,t) + \partial_x v(x,t) = 0 \\
+            \partial_t v(x,t) + \partial_x p(x,t) = 0
+        \end{cases}
+    \end{equation}
+    \item Domain : $x \in [0,L]$, $t \in [0,T]$.
+    \item Initial conditions : $p(x,0) = p_0(x)$, $v(x,0) = v_0(x)$.
+    \item Riemann variables : $r(x,t) = p(x,t) + v(x,t)$, $s(x,t) = p(x,t) - v(x,t)$.
+    \begin{equation}
+        \begin{cases}
+            \partial_t r(x,t) + \partial_x r(x,t) = 0 \\
+            \partial_t s(x,t) - \partial_x s(x,t) = 0
+        \end{cases}
+    \end{equation}
+\end{itemize}
+\end{frame}
+
+\slideTitle{Simplified Model (contd.)}
+\begin{itemize}
+    \item Exact solution :
+    \begin{equation}
+        \begin{cases}
+            r(x,t) = r_0(x-ct) = p_0(x-ct) + v_0(x-ct) \\
+            s(x,t) = s_0(x+ct) = p_0(x+ct) - v_0(x+ct)
+        \end{cases}
+    \end{equation}
+    \item Therefore :
+    \begin{equation}
+        \begin{cases}
+            \begin{aligned}
+            p(x,t) &= \tfrac12\bigl[r_0(x-ct) + s_0(x+ct)\bigr] \\
+            &= \tfrac12\bigl[p_0(x-ct) + v_0(x-ct) + p_0(x+ct) - v_0(x+ct)\bigr] \\
+            v(x,t) &= \tfrac12\bigl[r_0(x-ct) - s_0(x+ct)\bigr] \\
+            &= \tfrac12\bigl[p_0(x-ct) + v_0(x-ct) - p_0(x+ct) + v_0(x+ct)\bigr]
+            \end{aligned}
+        \end{cases}
+    \end{equation}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+
+\end{document}
